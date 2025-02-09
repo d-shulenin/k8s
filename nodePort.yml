@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: url-shortener-nodeport
+spec:
+  type: NodePort
+  selector:
+    components: url-shortener-frontend
+  ports:
+    - port: 3000
+      targetPort: 80
+      nodePort: 31200
