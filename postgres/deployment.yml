@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: url-shortener-postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      components: url-shortener-postgres
+  template:
+    metadata:
+      name: url-shortener-postgres-pod
+      labels:
+        components: url-shortener-postgres
+    spec:
+      containers:
+        - name: url-shortener-postgres-container
+          image: postgres
+          resources:
+            limits:
+              memory: "500Mi"
+              cpu: "300m"
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_DB
+                  name: url-shortener-postgres-secret
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_USER
+                  name: url-shortener-postgres-secret
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: url-shortener-postgres-secret
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
