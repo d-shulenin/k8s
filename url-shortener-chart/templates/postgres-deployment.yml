@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.database.name }}-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      components: {{ .Values.database.name }}
+  template:
+    metadata:
+      name: {{ .Values.database.name }}-pod
+      labels:
+        components: {{ .Values.database.name }}
+    spec:
+      containers:
+        - name: {{ .Values.database.name }}-container
+          image: {{ .Values.database.image }}
+          resources:
+            limits: {{ .Values.database.limits | toYaml | nindent 14 }}
+          ports:
+            - containerPort: {{ .Values.database.port }}
+          env:
+            {{- range .Values.database.envs}}
+            {{- $data := dict "name" $.Values.database.name "env" . }}
+            {{- include "env.template" $data | indent 12}}
+            {{- end}}
+          volumeMounts:
+            - name: {{ .Values.database.volume }}
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+      volumes:
+        - name: {{ .Values.database.volume }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.database.name }}-pvc

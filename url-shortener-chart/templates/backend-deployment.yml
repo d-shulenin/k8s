@@ -1,32 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: url-shortener-backend-deployment
+  name: {{ .Values.backend.name }}-deployment
 spec:
-  replicas: 1
+  replicas: {{ .Values.backend.replicas }}
   selector:
-    matchLabels:
-      components: url-shortener-backend
+    matchLabels: 
+      components: {{ .Values.backend.name }}
   template:
     metadata:
-      labels:
-        components: url-shortener-backend
+      labels: 
+        components: {{ .Values.backend.name }}
     spec:
       containers:
-        - name: url-shortener-backend-container
-          image: antonlarichev/short-api:v1.0
+        - name: {{ .Values.backend.name }}-container
+          image: "{{ .Values.backend.image }}:{{ .Values.backend.imageVersion }}"
           resources:
-            limits:
-              memory: "1Gi"
-              cpu: "600m"
+            limits: {{ .Values.backend.limits | toYaml | nindent 14 }}
           ports:
-            - containerPort: 3000
+            - containerPort: {{ .Values.backend.port }}
           env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: url-shortener-backend-secret
-                  key: DATABASE_URL
+            {{- range .Values.backend.envs  }}
+            {{- $data := dict "name" $.Values.backend.name "env" . }}
+            {{- include "env.template" $data | indent 12}}
+            {{- end}}
           volumeMounts:
             - name: test
               mountPath: /etc/test

@@ -1,0 +1,38 @@
+frontend:
+  name: url-shortener-frontend
+  image: antonlarichev/short-app
+  imageVersion: "v1.4"
+  replicas: 1
+  port: 80
+  limits:
+    memory: "128Mi"
+    cpu: "100m"
+
+backend:
+  name: url-shortener-backend
+  port: 3000
+  image: antonlarichev/short-api
+  imageVersion: "latest"
+  replicas: 1
+  limits:
+    memory: "1Gi"
+    cpu: "600m"
+  envs:
+    - DATABASE_URL
+
+database:
+  name: url-shortener-postgres
+  image: postgres
+  volume: postgres-data
+  user: demo
+  password: demo
+  db: demo
+  port: 5432
+  host: url-shortener-postgres-cluster-ip
+  limits:
+    memory: "256Mi"
+    cpu: "300m"
+  envs:
+    - POSTGRES_DB
+    - POSTGRES_USER
+    - POSTGRES_PASSWORD

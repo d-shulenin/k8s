@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.frontend.name }}-deployment
+  # namespace: url-shortener-frontend-namespace
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      components: {{ .Values.frontend.name }}
+  template:
+    metadata:
+      name: {{ .Values.frontend.name }}-pod
+      labels:
+        components: {{ .Values.frontend.name }}
+    spec:
+      containers:
+        - name: {{ .Values.frontend.name }}-container
+          image: "{{ .Values.frontend.image }}:{{ .Values.frontend.imageVersion }}"
+          ports:
+            - containerPort: {{ .Values.frontend.port }}
+          resources:
+            limits: {{ .Values.frontend.limits | toYaml | nindent 14 }}
