@@ -24,9 +24,6 @@ database:
   name: url-shortener-postgres
   image: postgres
   volume: postgres-data
-  user: demo
-  password: demo
-  db: demo
   port: 5432
   host: url-shortener-postgres-cluster-ip
   limits:
