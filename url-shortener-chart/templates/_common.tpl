@@ -3,5 +3,5 @@
   valueFrom: 
     secretKeyRef: 
         name: {{ .name }}-secret
-        key: {{ .env }}
+        key: {{ .env }} 
 {{- end}}
