@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}-api-release
+  labels:
+    components: {{ .Values.backend.components }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ .Values.backend.name }}-cluster-ip:{{ .Values.backend.port }}/api']
+  restartPolicy: Never
